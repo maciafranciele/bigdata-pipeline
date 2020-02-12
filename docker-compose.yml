@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+
+  spark:
+    build: spark-image/.
+    ports:
+      - "8888:8888"
+    environment:
+      ACCESS_KEY: "INSERIR ACCESS_KEY"
+      SECRET_KEY: "INSERIR SECRET_KEY"
+    depends_on:
+      - db
+    deploy:
+      replicas: 1
+      #update_config:
+      #  parallelism: 1
+      #  delay: 10is
+      mode: replicated
+      restart_policy:
+        condition: on-failure
+
+  db:
+    build: postgresql-image/.
+    ports:
+      - "5432:5432"
+    #volumes:
+     # - db-data:/var/lib/mysql
+    environment:
+      POSTGRES_USER: dataeng
+      POSTGRES_PASSWORD: 12345678
+      POSTGRES_DB: analyticsdb
+    deploy:
+      replicas: 1
+      # resources:
+      #   limits:
+      #     cpus: "0.1"
+      #     memory: 50M
+      restart_policy:
+        condition: on-failure
+
