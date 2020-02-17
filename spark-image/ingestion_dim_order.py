@@ -70,18 +70,20 @@ if __name__ == '__main__':
 #----------------------------------------------------------
         df_order = spark.read.json("s3a://ifood-data-architect-test-source/order.json.gz")
 
-        df_dim_fields = df_order.filter(df_order.customer_id.isNotNull())\
-            .select("order_id","order_scheduled","customer_id","delivery_address_city",\
-                    "delivery_address_state","delivery_address_country","delivery_address_district",\
-                    "delivery_address_zip_code","merchant_id","order_created_at","order_total_amount")
+        df_dim_fields = df_order.filter(df_order.customer_id.isNotNull()) \
+            .select(df_order.order_id, \
+                    df_order.order_scheduled.alias('scheduled'), \
+                    df_order.customer_id, \
+                    df_order.delivery_address_city, \
+                    df_order.delivery_address_state, \
+                    df_order.delivery_address_country, \
+                    df_order.delivery_address_district, \
+                    df_order.delivery_address_zip_code.cast('int'), \
+                    df_order.merchant_id, \
+                    df_order.order_created_at.cast('timestamp').alias('created_at'), \
+                    df_order.order_total_amount.alias('total_amount'))
 
-        df_order_curated = df_dim_fields\
-        .withColumn('delivery_address_zip_code',df_dim_fields.delivery_address_zip_code.cast('int')) \
-        .withColumn('order_created_at',df_dim_fields.order_created_at.cast('timestamp')) \
-        .withColumnRenamed('order_id', 'id') \
-        .withColumnRenamed('order_scheduled','scheduled') \
-        .withColumnRenamed('order_total_amount','total_amount') \
-        .withColumnRenamed('order_created_at','created_at')
+        df_order_curated = df_dim_fields.na.fill({'total_amount': 0})
 
         insertIntoTable(df_order_curated,'append',url,'tbl_dim_order',properties)
 

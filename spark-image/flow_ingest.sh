@@ -110,7 +110,7 @@ function main() {
       ingestion_merchant
       ingestion_customer
       ingestion_order
-	  ingestion_fact
+	    ingestion_fact
      
      DATE_STOP=`date -u +%s`
      DATE_DURATION=`expr \( $DATE_STOP - $DATE_START \) / 60`

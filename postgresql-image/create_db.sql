@@ -9,7 +9,7 @@ CREATE TABLE tbl_dim_customer(
 );
 
 CREATE TABLE tbl_dim_merchant(
-	id TEXT PRIMARY KEY,
+	merchant_id TEXT PRIMARY KEY,
 	created_at TIMESTAMP NOT NULL,
 	enabled BOOLEAN NOT NULL,
 	price_range INT NOT NULL,
@@ -24,7 +24,7 @@ CREATE TABLE tbl_dim_merchant(
 );
 
 CREATE TABLE tbl_dim_order(
-	id TEXT PRIMARY KEY,
+	order_id TEXT PRIMARY KEY,
 	scheduled BOOLEAN NOT NULL,
 	customer_id TEXT NOT NULL REFERENCES tbl_dim_customer (customer_id),
 	delivery_address_city TEXT NOT NULL,
@@ -32,12 +32,12 @@ CREATE TABLE tbl_dim_order(
 	delivery_address_country TEXT NOT NULL,
 	delivery_address_district TEXT NOT NULL,
 	delivery_address_zip_code INT NOT NULL,
-	merchant_id TEXT NOT NULL REFERENCES tbl_dim_merchant (id),
+	merchant_id TEXT NOT NULL REFERENCES tbl_dim_merchant (merchant_id),
 	created_at TIMESTAMP NOT NULL,
 	total_amount FLOAT NOT NULL);
 
 CREATE TABLE tbl_dim_order_items(
-	id TEXT PRIMARY KEY,
+	order_items_id TEXT PRIMARY KEY,
 	name TEXT NOT NULL,
 	quantity INT NOT NULL,
 	unitPrice FLOAT NOT NULL,
@@ -47,13 +47,13 @@ CREATE TABLE tbl_dim_order_items(
 	totalAddition FLOAT NOT NULL,
 	discount FLOAT NOT NULL,
 	totalDiscount FLOAT NOT NULL,
-	id_order TEXT NOT NULL REFERENCES tbl_dim_order (id)
+	id_order TEXT NOT NULL REFERENCES tbl_dim_order (order_id)
 );
 
 CREATE TABLE tbl_fact_order(
    date TIMESTAMP NOT NULL,
    customer_id TEXT NOT NULL REFERENCES tbl_dim_customer (customer_id),
-   merchant_id TEXT NOT NULL REFERENCES tbl_dim_merchant (id),
+   merchant_id TEXT NOT NULL REFERENCES tbl_dim_merchant (merchant_id),
    order_qty INT NOT NULL,
    order_amount FLOAT NOT NULL,
    order_discount FLOAT,
@@ -70,7 +70,7 @@ CREATE TABLE tbl_fact_order(
 	 item_qty INT,
 	 item_value FLOAT,
 	 order_discount FLOAT,
-	 FOREIGN KEY (merchant_id) REFERENCES tbl_dim_merchant (id)
+	 FOREIGN KEY (merchant_id) REFERENCES tbl_dim_merchant (merchant_id)
 );
 
 CREATE TABLE tbl_fact_client(
